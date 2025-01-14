@@ -6,6 +6,7 @@ import os
 def extract_chapters_from_epub(file_path, output_dir):
     """
     Extracts chapters from an EPUB file and saves them as .txt files.
+    If no chapters are detected, saves the entire content of the EPUB as a single .txt file.
 
     Args:
         file_path (str): Path to the EPUB file.
@@ -13,7 +14,7 @@ def extract_chapters_from_epub(file_path, output_dir):
     """
     chapters = {}  # Dictionary to store chapter titles and their content
 
-    # Get the base file name (without extension) for use in chapter file names
+    # Get the base file name (without extension) for use in file names
     base_name = os.path.splitext(os.path.basename(file_path))[0]
 
     print(f"Processing EPUB file: {file_path}")
@@ -27,6 +28,7 @@ def extract_chapters_from_epub(file_path, output_dir):
         return
 
     # Iterate through each item in the EPUB file
+    all_content = []  # Collect all content in case no chapters are found
     for item in book.get_items():
         if item.get_type() == epub.EpubHtml:
             # Parse the content of the HTML using BeautifulSoup
@@ -53,8 +55,20 @@ def extract_chapters_from_epub(file_path, output_dir):
                 except Exception as e:
                     print(f"Error saving chapter {chapter_file_name}: {e}")
 
+            # Collect all content for fallback handling
+            all_content.append(content)
+
+    # If no chapters are found, save the entire EPUB content as a single file
     if not chapters:
-        print("No valid chapters were found in the EPUB. Try another file or check the structure.")
+        print("No valid chapters were found. Saving entire content as a single file.")
+        full_content = "\n\n".join(all_content)  # Combine all extracted content
+        single_file_path = os.path.join(output_dir, f"{base_name}_full_content.txt")
+        try:
+            with open(single_file_path, "w", encoding="utf-8") as f:
+                f.write(full_content)
+            print(f"Saved full content to: {single_file_path}")
+        except Exception as e:
+            print(f"Error saving full content: {e}")
     else:
         print(f"Successfully extracted {len(chapters)} chapters.")
 
