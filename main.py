@@ -6,7 +6,7 @@ from src.epub_reader import extract_text_with_calibre
 # Define file paths and directories
 EPUB_FILE = "data/sample_book.epub"
 TEXT_OUTPUT_DIR = "output/chapters_text/"
-AUDIO_OUTPUT_DIR = "output/chapters_audio/"
+AUDIO_OUTPUT_DIR = r"C:\Users\ericc\Documents\Testing Code and whatnot\Github\.EPUBtoAudiobook\output\audiofiles"  # Explicit path
 
 def generate_audio_from_text(text_file_path, audio_file_path):
     """
