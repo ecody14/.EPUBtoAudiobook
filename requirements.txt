@@ -1,1 +1,25 @@
- # Python dependencies (e.g., VITS dependencies)
+# Core dependencies
+torch>=1.7      # PyTorch for VITS
+numpy           # Numerical computations
+scipy           # Scientific computing
+
+# Text processing
+phonemizer      # Converts text to phonemes (required for VITS)
+unidecode       # Unicode text normalization
+inflect         # Text-to-numbers conversion
+
+# Audio processing
+librosa         # Audio analysis and manipulation
+tqdm            # Progress bars for processing
+matplotlib      # Plotting (optional, for debugging and spectrograms)
+
+# EPUB handling
+ebooklib        # Extracts content from EPUB files
+beautifulsoup4  # Parses and cleans HTML content
+
+# Optional but recommended
+pydub           # Audio manipulation and file format conversion (e.g., WAV to MP3)
+
+# Testing and linting (optional)
+pytest          # For running tests
+flake8          # For linting and code style checking
