@@ -16,9 +16,12 @@ def extract_chapters_from_epub(file_path, output_dir):
     # Get the base file name (without extension) for use in chapter file names
     base_name = os.path.splitext(os.path.basename(file_path))[0]
 
+    print(f"Processing EPUB file: {file_path}")
+
     # Load the EPUB file
     try:
         book = epub.read_epub(file_path)
+        print("EPUB file successfully loaded.")
     except Exception as e:
         print(f"Error reading EPUB file: {e}")
         return
@@ -35,24 +38,32 @@ def extract_chapters_from_epub(file_path, output_dir):
             # Get the text content and strip any unnecessary whitespace
             content = soup.get_text().strip()
 
-            # Save the chapter content to a .txt file
-            chapter_file_name = f"{base_name}_Chapter_{len(chapters) + 1}.txt"
-            chapter_file_path = os.path.join(output_dir, chapter_file_name)
+            # Only process chapters with valid content
+            if content:
+                chapters[title] = content
 
-            with open(chapter_file_path, "w", encoding="utf-8") as f:
-                f.write(content)
+                # Save the chapter content to a .txt file
+                chapter_file_name = f"{base_name}_Chapter_{len(chapters)}.txt"
+                chapter_file_path = os.path.join(output_dir, chapter_file_name)
 
-            # Add the title and content to the chapters dictionary
-            chapters[title] = content
+                try:
+                    with open(chapter_file_path, "w", encoding="utf-8") as f:
+                        f.write(content)
+                    print(f"Saved chapter: {chapter_file_name}")
+                except Exception as e:
+                    print(f"Error saving chapter {chapter_file_name}: {e}")
 
-            print(f"Saved chapter: {chapter_file_path}")
+    if not chapters:
+        print("No valid chapters were found in the EPUB.")
+    else:
+        print(f"Successfully extracted {len(chapters)} chapters.")
 
     return chapters
 
 # Example for testing the function
 if __name__ == "__main__":
     # Path to your sample EPUB file
-    sample_epub_path = "data/sample.epub"
+    sample_epub_path = "data/sample_book.epub"
     output_directory = "output/chapters_text"
 
     # Create the output directory if it doesn't exist
