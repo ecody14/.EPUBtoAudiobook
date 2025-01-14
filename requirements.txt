@@ -13,10 +13,12 @@ librosa         # Audio analysis and manipulation
 tqdm            # Progress bars for processing
 matplotlib      # Plotting (optional, for debugging and spectrograms)
 gTTS            # google text to speech python app
-torch           # for VITS: 
-TTS
-librosa
-numpy
+TTS==0.17.7     # Coqui TTS
+torch==2.5.1    # PyTorch (compatible with Coqui TTS)
+numpy==1.23.5   # Compatible version for PyTorch
+matplotlib==3.4.3  # Compatible version for visualization (if needed)
+librosa==0.10.2    # For audio processing
+
 
 
 # EPUB handling
