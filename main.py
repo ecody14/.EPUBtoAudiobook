@@ -1,4 +1,3 @@
- # Entry point for the EPUB-to-Audiobook 
 # Entry point for the EPUB-to-Audiobook pipeline
 import os
 from src.epub_reader import extract_chapters_from_epub
@@ -16,8 +15,10 @@ def main():
         print(f"Error: EPUB file not found at {EPUB_FILE}")
         return
 
-    # Step 2: Create output directories if they don't exist
-    os.makedirs(TEXT_OUTPUT_DIR, exist_ok=True)
+    # Step 2: Ensure the output directory exists
+    if not os.path.isdir(TEXT_OUTPUT_DIR):
+        print(f"Creating output directory: {TEXT_OUTPUT_DIR}")
+        os.makedirs(TEXT_OUTPUT_DIR)
 
     # Step 3: Extract text from the EPUB and save it as .txt files
     print("Extracting chapters from EPUB...")
