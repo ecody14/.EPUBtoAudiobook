@@ -1,87 +1,38 @@
 # Converts EPUB to structured .txt files
-from ebooklib import epub
-from bs4 import BeautifulSoup
 import os
+import subprocess
 
-def extract_chapters_from_epub(file_path, output_dir):
+def extract_text_with_calibre(epub_path, output_dir):
     """
-    Extracts chapters from an EPUB file and saves them as .txt files.
-    If no chapters are detected, saves the entire content of the EPUB as a single .txt file.
+    Extracts text from an EPUB file using Calibre's ebook-convert tool.
 
     Args:
-        file_path (str): Path to the EPUB file.
-        output_dir (str): Directory to save the chapter .txt files.
+        epub_path (str): Path to the EPUB file.
+        output_dir (str): Directory to save the extracted text file.
+
+    Returns:
+        str: Path to the extracted text file, or None if an error occurs.
     """
-    chapters = {}  # Dictionary to store chapter titles and their content
+    # Ensure output directory exists
+    os.makedirs(output_dir, exist_ok=True)
 
-    # Get the base file name (without extension) for use in file names
-    base_name = os.path.splitext(os.path.basename(file_path))[0]
+    # Output file path
+    base_name = os.path.splitext(os.path.basename(epub_path))[0]
+    output_path = os.path.join(output_dir, f"{base_name}.txt")
 
-    print(f"Processing EPUB file: {file_path}")
+    # Run Calibre's ebook-convert command
+    command = [
+        "ebook-convert",
+        epub_path,
+        output_path,
+        "--output-profile", "generic_eink"
+    ]
 
-    # Load the EPUB file
     try:
-        book = epub.read_epub(file_path)
-        print("EPUB file successfully loaded.")
-    except Exception as e:
-        print(f"Error reading EPUB file: {e}")
-        return
-
-    # Iterate through each item in the EPUB file
-    all_content = []  # Collect all content in case no chapters are found
-    for item in book.get_items():
-        if item.get_type() == epub.EpubHtml:
-            # Parse the content of the HTML using BeautifulSoup
-            soup = BeautifulSoup(item.get_content(), 'html.parser')
-
-            # Attempt to extract the chapter title
-            title = soup.title.string if soup.title else f"Chapter {len(chapters) + 1}"
-
-            # Extract all text content from the HTML
-            content = soup.get_text(separator="\n").strip()
-
-            # Save chapters with significant content
-            if content and len(content) > 100:  # Avoid saving very small or empty chapters
-                chapters[title] = content
-
-                # Save the chapter content to a .txt file
-                chapter_file_name = f"{base_name}_Chapter_{len(chapters)}.txt"
-                chapter_file_path = os.path.join(output_dir, chapter_file_name)
-
-                try:
-                    with open(chapter_file_path, "w", encoding="utf-8") as f:
-                        f.write(content)
-                    print(f"Saved chapter: {chapter_file_name}")
-                except Exception as e:
-                    print(f"Error saving chapter {chapter_file_name}: {e}")
-
-            # Collect all content for fallback handling
-            all_content.append(content)
-
-    # If no chapters are found, save the entire EPUB content as a single file
-    if not chapters:
-        print("No valid chapters were found. Saving entire content as a single file.")
-        full_content = "\n\n".join(all_content)  # Combine all extracted content
-        single_file_path = os.path.join(output_dir, f"{base_name}_full_content.txt")
-        try:
-            with open(single_file_path, "w", encoding="utf-8") as f:
-                f.write(full_content)
-            print(f"Saved full content to: {single_file_path}")
-        except Exception as e:
-            print(f"Error saving full content: {e}")
-    else:
-        print(f"Successfully extracted {len(chapters)} chapters.")
-
-    return chapters
-
-# Example for testing the function
-if __name__ == "__main__":
-    # Path to your sample EPUB file
-    sample_epub_path = "data/sample_book.epub"
-    output_directory = "output/chapters_text"
-
-    # Create the output directory if it doesn't exist
-    os.makedirs(output_directory, exist_ok=True)
-
-    # Extract and save chapters
-    extract_chapters_from_epub(sample_epub_path, output_directory)
+        print(f"Running: {' '.join(command)}")
+        subprocess.run(command, check=True)
+        print(f"Text successfully extracted to: {output_path}")
+        return output_path
+    except subprocess.CalledProcessError as e:
+        print(f"Error during EPUB conversion: {e}")
+        return None

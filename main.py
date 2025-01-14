@@ -1,10 +1,10 @@
 # Entry point for the EPUB-to-Audiobook pipeline
 import os
-from src.epub_reader import extract_chapters_from_epub
+from src.epub_reader import extract_text_with_calibre
 
 # Define file paths and directories
 EPUB_FILE = "data/sample_book.epub"
-TEXT_OUTPUT_DIR = "output/chapters_text/"
+TEXT_OUTPUT_DIR = "output/"
 
 def main():
     """
@@ -15,16 +15,14 @@ def main():
         print(f"Error: EPUB file not found at {EPUB_FILE}")
         return
 
-    # Step 2: Ensure the output directory exists
-    if not os.path.isdir(TEXT_OUTPUT_DIR):
-        print(f"Creating output directory: {TEXT_OUTPUT_DIR}")
-        os.makedirs(TEXT_OUTPUT_DIR)
+    # Step 2: Extract text using Calibre
+    print("Extracting text from EPUB...")
+    text_file_path = extract_text_with_calibre(EPUB_FILE, TEXT_OUTPUT_DIR)
 
-    # Step 3: Extract text from the EPUB and save it as .txt files
-    print("Extracting chapters from EPUB...")
-    extract_chapters_from_epub(EPUB_FILE, TEXT_OUTPUT_DIR)
-
-    print("EPUB extraction complete. Text files saved.")
+    if text_file_path:
+        print(f"Text extracted and saved to: {text_file_path}")
+    else:
+        print("Failed to extract text from EPUB.")
 
     # Placeholder for TTS step
     print("TTS processing will go here in the next step.")
