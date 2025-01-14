@@ -15,7 +15,7 @@ tqdm            # Progress bars for processing
 gTTS            # google text to speech python app
 TTS==0.17.7     # Coqui TTS
     # PyTorch (compatible with Coqui TTS)
-numpy>=1.20.3,<1.23.   # Compatible version for PyTorch
+numpy>=1.20.3,<1.23   # Compatible version for PyTorch
 matplotlib==3.7  # Compatible version for visualization (if needed)
 librosa==0.10.2    # For audio processing
 
