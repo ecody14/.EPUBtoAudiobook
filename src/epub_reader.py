@@ -32,14 +32,14 @@ def extract_chapters_from_epub(file_path, output_dir):
             # Parse the content of the HTML using BeautifulSoup
             soup = BeautifulSoup(item.get_content(), 'html.parser')
 
-            # Extract the chapter title (or fallback to 'Untitled Chapter')
+            # Attempt to extract the chapter title
             title = soup.title.string if soup.title else f"Chapter {len(chapters) + 1}"
 
-            # Get the text content and strip any unnecessary whitespace
-            content = soup.get_text().strip()
+            # Extract all text content from the HTML
+            content = soup.get_text(separator="\n").strip()
 
-            # Only process chapters with valid content
-            if content:
+            # Save chapters with significant content
+            if content and len(content) > 100:  # Avoid saving very small or empty chapters
                 chapters[title] = content
 
                 # Save the chapter content to a .txt file
@@ -54,7 +54,7 @@ def extract_chapters_from_epub(file_path, output_dir):
                     print(f"Error saving chapter {chapter_file_name}: {e}")
 
     if not chapters:
-        print("No valid chapters were found in the EPUB.")
+        print("No valid chapters were found in the EPUB. Try another file or check the structure.")
     else:
         print(f"Successfully extracted {len(chapters)} chapters.")
 
