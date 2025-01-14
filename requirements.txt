@@ -14,7 +14,7 @@ tqdm            # Progress bars for processing
 matplotlib      # Plotting (optional, for debugging and spectrograms)
 gTTS            # google text to speech python app
 torch           # for VITS: 
-coqui-ai
+TTS
 librosa
 numpy
 
