@@ -9,7 +9,7 @@ unidecode       # Unicode text normalization
 inflect         # Text-to-numbers conversion
 
 # Audio processing
-librosa         # Audio analysis and manipulation
+         # Audio analysis and manipulation
 tqdm            # Progress bars for processing
       # Plotting (optional, for debugging and spectrograms)
 gTTS            # google text to speech python app
