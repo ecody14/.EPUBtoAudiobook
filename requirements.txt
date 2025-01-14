@@ -1,6 +1,6 @@
 # Core dependencies
 torch>=1.7      # PyTorch for VITS
-numpy           # Numerical computations
+           # Numerical computations
 scipy           # Scientific computing
 
 # Text processing
