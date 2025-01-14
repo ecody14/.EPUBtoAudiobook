@@ -15,12 +15,13 @@ def extract_text_with_calibre(epub_path, output_dir):
     Returns:
         list: List of file paths for the extracted chapter text files.
     """
-    # Ensure output directory exists
-    os.makedirs(output_dir, exist_ok=True)
+    # Explicitly set the output directory path
+    full_output_dir = "C:/Users/ericc/Documents/Testing Code and whatnot/Github/.EPUBtoAudiobook/output/chapters_text"
+    os.makedirs(full_output_dir, exist_ok=True)
 
     # Output file path
     base_name = os.path.splitext(os.path.basename(epub_path))[0]
-    full_text_path = os.path.join(output_dir, f"{base_name}_full.txt")
+    full_text_path = os.path.join(full_output_dir, f"{base_name}_full.txt")
 
     # Run Calibre's ebook-convert command to extract text
     command = [
@@ -53,7 +54,7 @@ def extract_text_with_calibre(epub_path, output_dir):
     chapter_files = []
     for i, chapter in enumerate(chapters, start=1):
         chapter_file_name = f"{base_name}_Chapter_{i}.txt"
-        chapter_file_path = os.path.join(output_dir, chapter_file_name)
+        chapter_file_path = os.path.join(full_output_dir, chapter_file_name)
 
         try:
             with open(chapter_file_path, "w", encoding="utf-8") as f:
@@ -69,9 +70,9 @@ def extract_text_with_calibre(epub_path, output_dir):
 if __name__ == "__main__":
     # Path to your sample EPUB file
     sample_epub_path = "data/sample_book.epub"
-    output_directory = "output/chapters_text"
+    output_directory = "output/chapters_text"  # This will not be used as the path is hardcoded
 
-    # Create the output directory if it doesn't exist
+    # Create the output directory if it doesn't exist (this is just a backup)
     os.makedirs(output_directory, exist_ok=True)
 
     # Extract and save chapters
