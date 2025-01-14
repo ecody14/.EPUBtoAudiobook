@@ -1,33 +1,25 @@
-# Core dependencies
-torch>=1.7      # PyTorch for VITS
-           # Numerical computations
-scipy           # Scientific computing
+# Main TTS package
+TTS==0.17.7
 
-# Text processing
-phonemizer      # Converts text to phonemes (required for VITS)
-unidecode       # Unicode text normalization
-inflect         # Text-to-numbers conversion
+# PyTorch (ensure it's installed before Coqui TTS)
+torch==2.5.1
+torchaudio==2.5.1
 
-# Audio processing
-         # Audio analysis and manipulation
-tqdm            # Progress bars for processing
-      # Plotting (optional, for debugging and spectrograms)
-gTTS            # google text to speech python app
-TTS==0.17.7     # Coqui TTS
-    # PyTorch (compatible with Coqui TTS)
-numpy>=1.20.3,<1.23   # Compatible version for PyTorch
-matplotlib==3.7  # Compatible version for visualization (if needed)
-librosa==0.10.2    # For audio processing
-
-
-
-# EPUB handling
-ebooklib        # Extracts content from EPUB files
-beautifulsoup4  # Parses and cleans HTML content
-
-# Optional but recommended
-pydub           # Audio manipulation and file format conversion (e.g., WAV to MP3)
-
-# Testing and linting (optional)
-pytest          # For running tests
-flake8          # For linting and code style checking
+# Other dependencies
+numpy>=1.20.3,<1.23
+scipy>=1.6.0
+matplotlib==3.7.0
+librosa==0.10.2
+pydub==0.25.1
+pytest==8.3.4
+flask==2.3.3
+aiohttp==3.8.6
+soundfile==0.12.1
+scikit-learn==1.3.0
+joblib>=1.4
+fsspec==2023.6.0
+tqdm==4.64.1
+unidecode==1.3.8
+phonemizer==3.3.0
+inflect==7.5.0
+pydub==0.25.1
