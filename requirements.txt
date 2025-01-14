@@ -12,6 +12,7 @@ inflect         # Text-to-numbers conversion
 librosa         # Audio analysis and manipulation
 tqdm            # Progress bars for processing
 matplotlib      # Plotting (optional, for debugging and spectrograms)
+gTTS            # google text to speech python app
 
 # EPUB handling
 ebooklib        # Extracts content from EPUB files
