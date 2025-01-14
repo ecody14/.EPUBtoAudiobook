@@ -11,7 +11,7 @@ inflect         # Text-to-numbers conversion
 # Audio processing
 librosa         # Audio analysis and manipulation
 tqdm            # Progress bars for processing
-matplotlib      # Plotting (optional, for debugging and spectrograms)
+      # Plotting (optional, for debugging and spectrograms)
 gTTS            # google text to speech python app
 TTS==0.17.7     # Coqui TTS
     # PyTorch (compatible with Coqui TTS)
