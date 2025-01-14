@@ -1,1 +1,1 @@
- # Unit tests for each module
+ # Unit tests for EPUB parsing
