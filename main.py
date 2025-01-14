@@ -3,7 +3,7 @@ import os
 from src.epub_reader import extract_chapters_from_epub
 
 # Define file paths and directories
-EPUB_FILE = "data/sample.epub"
+EPUB_FILE = "data/sample_book.epub"
 TEXT_OUTPUT_DIR = "output/chapters_text/"
 
 def main():
