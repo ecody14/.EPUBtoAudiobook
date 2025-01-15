@@ -1,25 +1,12 @@
 # Main TTS package
-TTS==0.17.7
-
-# PyTorch (ensure it's installed before Coqui TTS)
-torch==2.5.1
-torchaudio==2.5.1
-
-# Other dependencies
-numpy
-scipy
-matplotlib
-librosa
+pyttsx3
+ebooklib
+beautifulsoup4
 pydub
-pytest
-flask
-aiohttp
-soundfile
-scikit-learn
-joblib
-fsspec
 tqdm
-unidecode
-phonemizer
-inflect
-pydub
+numpy==1.24.4
+scipy
+librosa
+tqdm
+gTTS
+
