@@ -1,6 +1,6 @@
 # Entry point for the EPUB-to-Audiobook pipeline
 import os
-from epub_reader import extract_chapters_from_epub  # Update the import here to remove circular reference
+from src.epub_reader import extract_chapters_from_epub  # Corrected import path for src/epub_reader
 import pyttsx3
 
 # Define file paths and directories
