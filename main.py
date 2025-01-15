@@ -26,7 +26,7 @@ def split_into_chapters(content):
     """
     Splits the content into chapters using a flexible regex pattern to detect common chapter headings like 'Chapter X', 'Task X:', etc.
     """
-    # A more flexible regex pattern for detecting titles like 'Chapter X', 'Task X:', etc.
+    # More flexible regex pattern for detecting titles like 'Chapter X', 'Task X:', etc.
     chapter_pattern = r"(Task \d+[:]?|Chapter \d+[:]?|[A-Za-z]+ \d+[:]?)[\s\S]+?(?=(Task \d+[:]?|Chapter \d+[:]?|$))"
     
     # Find all matches of the pattern
@@ -34,7 +34,9 @@ def split_into_chapters(content):
 
     chapter_dict = {}
     for i, chapter in enumerate(chapters, start=1):
-        chapter_dict[f"Chapter {i}"] = chapter.strip()
+        # Fix: check if the result is a tuple and correctly extract the chapter content
+        chapter_content = chapter[0].strip() if isinstance(chapter, tuple) else chapter.strip()
+        chapter_dict[f"Chapter {i}"] = chapter_content
 
     return chapter_dict
 
@@ -106,4 +108,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
