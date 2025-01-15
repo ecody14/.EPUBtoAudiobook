@@ -24,14 +24,17 @@ def convert_epub_to_txt(epub_file, txt_output_file):
 
 def split_into_chapters(content):
     """
-    Splits the content into chapters using a regex to find chapter headings like 'Chapter 1', 'Chapter 2', etc.
+    Splits the content into chapters using a flexible regex pattern to detect common chapter headings like 'Chapter X', 'Task X:', etc.
     """
-    chapter_pattern = r"(Chapter \d+[^a-zA-Z0-9]*)(.*?)(?=(Chapter \d+|$))"
+    # A more flexible regex pattern for detecting titles like 'Chapter X', 'Task X:', etc.
+    chapter_pattern = r"(Task \d+[:]?|Chapter \d+[:]?|[A-Za-z]+ \d+[:]?)[\s\S]+?(?=(Task \d+[:]?|Chapter \d+[:]?|$))"
+    
+    # Find all matches of the pattern
     chapters = re.findall(chapter_pattern, content, re.DOTALL)
 
     chapter_dict = {}
-    for i, (chapter_title, chapter_content, _) in enumerate(chapters, start=1):
-        chapter_dict[f"Chapter {i}"] = chapter_content.strip()
+    for i, chapter in enumerate(chapters, start=1):
+        chapter_dict[f"Chapter {i}"] = chapter.strip()
 
     return chapter_dict
 
@@ -103,3 +106,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
