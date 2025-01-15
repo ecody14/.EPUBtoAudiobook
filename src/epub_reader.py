@@ -1,40 +1,25 @@
 # Converts EPUB to structured .txt files
-import ebooklib
 from ebooklib import epub
 from bs4 import BeautifulSoup
 
 def extract_chapters_from_epub(epub_file):
     """
-    Extract chapters from the given EPUB file.
-    :param epub_file: Path to the EPUB file.
-    :return: Dictionary where keys are chapter titles and values are chapter contents.
+    Extracts text content from the EPUB file.
     """
-    print(f"Processing EPUB file: {epub_file}")
-
-    # Open the EPUB file
-    book = epub.read_epub(epub_file)
     chapters = {}
 
-    # Loop through all the items in the EPUB
+    # Load the EPUB file
+    book = epub.read_epub(epub_file)
+    
+    # Loop through the items in the EPUB file
     for item in book.get_items():
         if item.get_type() == ebooklib.ITEM_DOCUMENT:
-            # Get the content of the item
-            content = item.get_body_content().decode('utf-8')  # Decode the content to a string
-            
-            # Parse the item with BeautifulSoup to extract content
-            soup = BeautifulSoup(content, 'html.parser')
+            # Parse the HTML content of each chapter using BeautifulSoup
+            soup = BeautifulSoup(item.content, 'html.parser')
+            chapter_title = soup.find('title').text if soup.find('title') else 'Unknown Chapter'
+            chapter_content = soup.get_text()
+            chapters[chapter_title] = chapter_content
 
-            # Extract title (can be adjusted based on the structure of the EPUB)
-            title = soup.find('title')
-            title_text = title.get_text() if title else f"Chapter_{len(chapters)+1}"
-
-            # Extract the content of the chapter (text only)
-            content_text = ''.join([p.get_text() for p in soup.find_all('p')])
-
-            chapters[title_text] = content_text
-
-    print("EPUB file successfully loaded.")
-    if not chapters:
-        print("No valid chapters found in the EPUB. Try another file or check the structure.")
     return chapters
+
 
