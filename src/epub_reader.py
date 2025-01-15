@@ -1,79 +1,36 @@
 # Converts EPUB to structured .txt files
-import os
-import subprocess
-import re
+import ebooklib
+from ebooklib import epub
+from bs4 import BeautifulSoup
 
-def extract_text_with_calibre(epub_path, output_dir):
+def extract_chapters_from_epub(epub_file):
     """
-    Extracts text from an EPUB file using Calibre's ebook-convert tool.
-    Then splits the text into chapters based on a specific pattern (e.g., 'Chapter 1').
-
-    Args:
-        epub_path (str): Path to the EPUB file.
-        output_dir (str): Directory to save the extracted text files.
-
-    Returns:
-        list: List of file paths for the extracted chapter text files.
+    Extract chapters from the given EPUB file.
+    :param epub_file: Path to the EPUB file.
+    :return: Dictionary where keys are chapter titles and values are chapter contents.
     """
-    # Explicitly set the output directory path
-    full_output_dir = "C:/Users/ericc/Documents/Testing Code and whatnot/Github/.EPUBtoAudiobook/output/chapters_text"
-    os.makedirs(full_output_dir, exist_ok=True)
+    print(f"Processing EPUB file: {epub_file}")
 
-    # Output file path
-    base_name = os.path.splitext(os.path.basename(epub_path))[0]
-    full_text_path = os.path.join(full_output_dir, f"{base_name}_full.txt")
+    # Open the EPUB file
+    book = epub.read_epub(epub_file)
+    chapters = {}
 
-    # Run Calibre's ebook-convert command to extract text
-    command = [
-        "ebook-convert",
-        epub_path,
-        full_text_path,
-        "--output-profile", "generic_eink"
-    ]
+    # Loop through all the items in the EPUB
+    for item in book.get_items():
+        if item.get_type() == ebooklib.ITEM_DOCUMENT:
+            # Parse the item with BeautifulSoup to extract content
+            soup = BeautifulSoup(item.get_body(), 'html.parser')
 
-    try:
-        print(f"Running: {' '.join(command)}")
-        subprocess.run(command, check=True)
-        print(f"Text successfully extracted to: {full_text_path}")
-    except subprocess.CalledProcessError as e:
-        print(f"Error during EPUB conversion: {e}")
-        return []
+            # Extract title (can be adjusted based on the structure of the EPUB)
+            title = soup.find('title')
+            title_text = title.get_text() if title else f"Chapter_{len(chapters)+1}"
 
-    # Read the full text from the converted file
-    with open(full_text_path, "r", encoding="utf-8") as file:
-        full_text = file.read()
+            # Extract the content of the chapter (text only)
+            content = ''.join([p.get_text() for p in soup.find_all('p')])
 
-    # Split the text into chapters based on a pattern like "Chapter 1", "Chapter 2", etc.
-    chapter_pattern = re.compile(r"(Chapter \d+|\d+\.\s*Chapter\s*\w+)", re.IGNORECASE)
-    chapters = re.split(chapter_pattern, full_text)
+            chapters[title_text] = content
 
-    # Filter out empty strings and trim whitespace
-    chapters = [chapter.strip() for chapter in chapters if chapter.strip()]
-
-    # Save each chapter as a separate text file
-    chapter_files = []
-    for i, chapter in enumerate(chapters, start=1):
-        chapter_file_name = f"{base_name}_Chapter_{i}.txt"
-        chapter_file_path = os.path.join(full_output_dir, chapter_file_name)
-
-        try:
-            with open(chapter_file_path, "w", encoding="utf-8") as f:
-                f.write(chapter)
-            print(f"Saved chapter: {chapter_file_name}")
-            chapter_files.append(chapter_file_path)
-        except Exception as e:
-            print(f"Error saving chapter {chapter_file_name}: {e}")
-
-    return chapter_files
-
-# Example for testing the function
-if __name__ == "__main__":
-    # Path to your sample EPUB file
-    sample_epub_path = "data/sample_book.epub"
-    output_directory = "output/chapters_text"  # This will not be used as the path is hardcoded
-
-    # Create the output directory if it doesn't exist (this is just a backup)
-    os.makedirs(output_directory, exist_ok=True)
-
-    # Extract and save chapters
-    extract_text_with_calibre(sample_epub_path, output_directory)
+    print("EPUB file successfully loaded.")
+    if not chapters:
+        print("No valid chapters found in the EPUB. Try another file or check the structure.")
+    return chapters
