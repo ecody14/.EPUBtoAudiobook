@@ -2,7 +2,6 @@
 import os
 import subprocess
 import pyttsx3
-import re
 
 # Define file paths and directories
 EPUB_FILE = "data/sample_book.epub"
@@ -21,24 +20,6 @@ def convert_epub_to_txt(epub_file, txt_output_file):
         print(f"Conversion complete: {txt_output_file}")
     except subprocess.CalledProcessError as e:
         print(f"Error during conversion: {e}")
-
-def split_into_chapters(content):
-    """
-    Splits the content into chapters using a flexible regex pattern to detect common chapter headings like 'Chapter X', 'Task X:', etc.
-    """
-    # More flexible regex pattern for detecting titles like 'Chapter X', 'Task X:', etc.
-    chapter_pattern = r"(Task \d+[:]?|Chapter \d+[:]?|[A-Za-z]+ \d+[:]?)[\s\S]+?(?=(Task \d+[:]?|Chapter \d+[:]?|$))"
-    
-    # Find all matches of the pattern
-    chapters = re.findall(chapter_pattern, content, re.DOTALL)
-
-    chapter_dict = {}
-    for i, chapter in enumerate(chapters, start=1):
-        # Fix: check if the result is a tuple and correctly extract the chapter content
-        chapter_content = chapter[0].strip() if isinstance(chapter, tuple) else chapter.strip()
-        chapter_dict[f"Chapter {i}"] = chapter_content
-
-    return chapter_dict
 
 def main():
     """
@@ -64,15 +45,6 @@ def main():
         print(f"Error reading TXT file: {e}")
         return
 
-    # Split content into chapters
-    print("Splitting content into chapters...")
-    chapters = split_into_chapters(content)
-    print(f"Found {len(chapters)} chapters.")
-
-    if not chapters:
-        print("No chapters detected. Exiting...")
-        return
-
     # Use pyttsx3 for TTS
     print("Converting text to speech...")
     engine = pyttsx3.init()
@@ -82,25 +54,17 @@ def main():
         print("Failed to initialize pyttsx3 engine.")
         return
 
-    chapter_number = 1
-    for chapter_name, chapter_content in chapters.items():
-        if not chapter_content.strip():
-            print(f"Skipping empty chapter: {chapter_name}")
-            continue
+    # Generate audio for entire content
+    audio_file_name = "audiobook.mp3"
+    audio_file_path = os.path.join(AUDIO_OUTPUT_DIR, audio_file_name)
 
-        audio_file_name = f"{chapter_name}.mp3"
-        audio_file_path = os.path.join(AUDIO_OUTPUT_DIR, audio_file_name)
-
-        print(f"Generating audio for {chapter_name}...")
-        try:
-            # Try saving the audio to file
-            engine.save_to_file(chapter_content, audio_file_path)
-            print(f"Audio file saved: {audio_file_path}")
-        except Exception as e:
-            print(f"Error generating audio for {chapter_name}: {e}")
-            continue
-
-        chapter_number += 1
+    try:
+        # Try saving the entire content to audio file
+        engine.save_to_file(content, audio_file_path)
+        print(f"Audio file saved: {audio_file_path}")
+    except Exception as e:
+        print(f"Error generating audio: {e}")
+        return
 
     # Clean up and close the engine
     engine.runAndWait()
@@ -108,5 +72,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
