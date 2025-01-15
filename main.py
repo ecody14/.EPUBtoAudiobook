@@ -2,6 +2,7 @@
 import os
 import subprocess
 import pyttsx3
+import re
 
 # Define file paths and directories
 EPUB_FILE = "data/sample_book.epub"
@@ -21,6 +22,23 @@ def convert_epub_to_txt(epub_file, txt_output_file):
         print(f"Conversion complete: {txt_output_file}")
     except subprocess.CalledProcessError as e:
         print(f"Error during conversion: {e}")
+
+def split_into_chapters(content):
+    """
+    Splits the content into chapters using a regex to find chapter headings like 'Chapter 1', 'Chapter 2', etc.
+    """
+    # Regular expression pattern to detect chapters like 'Chapter 1', 'Chapter 2', etc.
+    chapter_pattern = r"(Chapter \d+[^a-zA-Z0-9]*)(.*?)(?=(Chapter \d+|$))"
+    
+    # Find all matches of the pattern
+    chapters = re.findall(chapter_pattern, content, re.DOTALL)
+
+    # Format the chapters into a dictionary with chapter number as the key
+    chapter_dict = {}
+    for i, (chapter_title, chapter_content, _) in enumerate(chapters, start=1):
+        chapter_dict[f"Chapter {i}"] = chapter_content.strip()
+
+    return chapter_dict
 
 def main():
     """
@@ -49,28 +67,31 @@ def main():
         print(f"Error reading TXT file: {e}")
         return
 
-    # Step 5: Use pyttsx3 for text-to-speech
+    # Step 5: Split content into chapters using regex
+    print("Splitting content into chapters...")
+    chapters = split_into_chapters(content)
+
+    # Step 6: Use pyttsx3 for text-to-speech
     print("Converting text to speech...")
     engine = pyttsx3.init()
     chapter_number = 1
-    # Split content into chapters (or you can define custom logic)
-    chapters = content.split("\n\n")  # Simple split for this example
 
-    for chapter in chapters:
-        if not chapter.strip():  # Skip empty chapters
-            continue
-
-        chapter_name = f"Chapter_{chapter_number}"
+    for chapter_name, chapter_content in chapters.items():
         audio_file_name = f"{chapter_name}.mp3"
         audio_file_path = os.path.join(AUDIO_OUTPUT_DIR, audio_file_name)
 
         # Set the properties for the voice and speed (optional)
-        engine.save_to_file(chapter, audio_file_path)
+        engine.save_to_file(chapter_content, audio_file_path)
         print(f"Audio file saved: {audio_file_path}")
         chapter_number += 1
 
-    # Step 6: Clean up and close the engine
+    # Step 7: Clean up and close the engine
     engine.runAndWait()
+    print("TTS conversion complete.")
+
+if __name__ == "__main__":
+    main()
+
     print("TTS conversion complete.")
 
 if __name__ == "__main__":
