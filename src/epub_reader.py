@@ -1,39 +1,53 @@
 # Converts EPUB to structured .txt files
-import ebooklib
-from ebooklib import epub
-from bs4 import BeautifulSoup
+import os
+from src.epub_reader import extract_chapters_from_epub
+import pyttsx3
 
-def extract_chapters_from_epub(epub_file):
+# Define file paths and directories
+EPUB_FILE = "data/sample_book.epub"
+TEXT_OUTPUT_DIR = "output/chapters_text/"
+AUDIO_OUTPUT_DIR = "output/audiofiles/"
+
+def main():
     """
-    Extract chapters from the given EPUB file.
-    :param epub_file: Path to the EPUB file.
-    :return: Dictionary where keys are chapter titles and values are chapter contents.
+    Main function to control the EPUB-to-Audiobook pipeline.
     """
-    print(f"Processing EPUB file: {epub_file}")
+    # Step 1: Check if the input file exists
+    if not os.path.exists(EPUB_FILE):
+        print(f"Error: EPUB file not found at {EPUB_FILE}")
+        return
 
-    # Open the EPUB file
-    book = epub.read_epub(epub_file)
-    chapters = {}
+    # Step 2: Create output directories if they don't exist
+    os.makedirs(TEXT_OUTPUT_DIR, exist_ok=True)
+    os.makedirs(AUDIO_OUTPUT_DIR, exist_ok=True)
 
-    # Loop through all the items in the EPUB
-    for item in book.get_items():
-        if item.get_type() == ebooklib.ITEM_DOCUMENT:
-            # Get the content of the item
-            content = item.get_body().decode('utf-8')  # Decode the content to a string
-            
-            # Parse the item with BeautifulSoup to extract content
-            soup = BeautifulSoup(content, 'html.parser')
+    # Step 3: Extract text from the EPUB
+    print("Extracting chapters from EPUB...")
+    chapters = extract_chapters_from_epub(EPUB_FILE)
 
-            # Extract title (can be adjusted based on the structure of the EPUB)
-            title = soup.find('title')
-            title_text = title.get_text() if title else f"Chapter_{len(chapters)+1}"
+    # Step 4: Save extracted chapters as text files
+    print("Saving extracted chapters to text files...")
+    for i, (title, content) in enumerate(chapters.items(), start=1):
+        file_name = f"Chapter_{i}_{title.replace(' ', '_')}.txt"
+        file_path = os.path.join(TEXT_OUTPUT_DIR, file_name)
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(content)
+        print(f"Saved: {file_path}")
 
-            # Extract the content of the chapter (text only)
-            content_text = ''.join([p.get_text() for p in soup.find_all('p')])
+    # Step 5: Use pyttsx3 for text-to-speech
+    print("Converting text to speech...")
+    engine = pyttsx3.init()
+    for i, (title, content) in enumerate(chapters.items(), start=1):
+        audio_file_name = f"Chapter_{i}_{title.replace(' ', '_')}.mp3"
+        audio_file_path = os.path.join(AUDIO_OUTPUT_DIR, audio_file_name)
 
-            chapters[title_text] = content_text
+        # Set the properties for the voice and speed (optional)
+        engine.save_to_file(content, audio_file_path)
+        print(f"Audio file saved: {audio_file_path}")
 
-    print("EPUB file successfully loaded.")
-    if not chapters:
-        print("No valid chapters found in the EPUB. Try another file or check the structure.")
-    return chapters
+    # Step 6: Clean up and close the engine
+    engine.runAndWait()
+    print("TTS conversion complete.")
+
+if __name__ == "__main__":
+    main()
