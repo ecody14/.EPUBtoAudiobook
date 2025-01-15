@@ -1,6 +1,6 @@
 # Entry point for the EPUB-to-Audiobook pipeline
 import os
-from src.epub_reader import extract_chapters_from_epub
+from epub_reader import extract_chapters_from_epub  # Update the import here to remove circular reference
 import pyttsx3
 
 # Define file paths and directories
@@ -41,7 +41,7 @@ def main():
         audio_file_name = f"Chapter_{i}_{title.replace(' ', '_')}.mp3"
         audio_file_path = os.path.join(AUDIO_OUTPUT_DIR, audio_file_name)
 
-        # Set the properties for the voice and speed
+        # Set the properties for the voice and speed (optional)
         engine.save_to_file(content, audio_file_path)
         print(f"Audio file saved: {audio_file_path}")
 
@@ -51,4 +51,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
