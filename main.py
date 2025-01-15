@@ -1,7 +1,7 @@
 # Entry point for the EPUB-to-Audiobook pipeline
 import os
-import pyttsx3
 from src.epub_reader import extract_chapters_from_epub
+import pyttsx3
 
 # Define file paths and directories
 EPUB_FILE = "data/sample_book.epub"
@@ -34,24 +34,21 @@ def main():
             f.write(content)
         print(f"Saved: {file_path}")
 
-    print("EPUB extraction complete. Text files saved.")
-
-    # Step 5: Convert text files to speech and save as audio files
+    # Step 5: Use pyttsx3 for text-to-speech
     print("Converting text to speech...")
     engine = pyttsx3.init()
-
-    # Set properties for voice and speech rate
-    engine.setProperty('rate', 150)  # Speed of speech
-    engine.setProperty('volume', 1)  # Volume level (0.0 to 1.0)
-
     for i, (title, content) in enumerate(chapters.items(), start=1):
-        # Save the audio file for each chapter
-        audio_file = os.path.join(AUDIO_OUTPUT_DIR, f"Chapter_{i}_{title.replace(' ', '_')}.mp3")
-        engine.save_to_file(content, audio_file)
-        print(f"Saved: {audio_file}")
+        audio_file_name = f"Chapter_{i}_{title.replace(' ', '_')}.mp3"
+        audio_file_path = os.path.join(AUDIO_OUTPUT_DIR, audio_file_name)
 
-    engine.runAndWait()  # Ensure the engine finishes processing
-    print("TTS processing complete. Audio files saved.")
+        # Set the properties for the voice and speed
+        engine.save_to_file(content, audio_file_path)
+        print(f"Audio file saved: {audio_file_path}")
+
+    # Step 6: Clean up and close the engine
+    engine.runAndWait()
+    print("TTS conversion complete.")
 
 if __name__ == "__main__":
     main()
+
