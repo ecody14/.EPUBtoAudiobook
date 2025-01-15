@@ -18,17 +18,20 @@ def extract_chapters_from_epub(epub_file):
     # Loop through all the items in the EPUB
     for item in book.get_items():
         if item.get_type() == ebooklib.ITEM_DOCUMENT:
+            # Get the content of the item
+            content = item.get_body().decode('utf-8')  # Decode the content to a string
+            
             # Parse the item with BeautifulSoup to extract content
-            soup = BeautifulSoup(item.get_body(), 'html.parser')
+            soup = BeautifulSoup(content, 'html.parser')
 
             # Extract title (can be adjusted based on the structure of the EPUB)
             title = soup.find('title')
             title_text = title.get_text() if title else f"Chapter_{len(chapters)+1}"
 
             # Extract the content of the chapter (text only)
-            content = ''.join([p.get_text() for p in soup.find_all('p')])
+            content_text = ''.join([p.get_text() for p in soup.find_all('p')])
 
-            chapters[title_text] = content
+            chapters[title_text] = content_text
 
     print("EPUB file successfully loaded.")
     if not chapters:
